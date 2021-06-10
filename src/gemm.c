@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <math.h>
 
+#ifdef FPGA
+#include "gemm_fpga.h"
+#endif
+
 void gemm_bin(int M, int N, int K, float ALPHA, 
         char  *A, int lda, 
         float *B, int ldb,
@@ -156,7 +160,11 @@ void gemm_cpu(int TA, int TB, int M, int N, int K, float ALPHA,
         }
     }
     if(!TA && !TB)
+#ifdef FPGA
+        gemm_nn_fpga(M, N, K, ALPHA, A, lda, B, ldb, C, ldc);
+#else
         gemm_nn(M, N, K, ALPHA,A,lda, B, ldb,C,ldc);
+#endif
     else if(TA && !TB)
         gemm_tn(M, N, K, ALPHA,A,lda, B, ldb,C,ldc);
     else if(!TA && TB)

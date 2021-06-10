@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef FPGA
+#include "gemm_fpga.h"
+#endif
+
 extern void predict_classifier(char *datacfg, char *cfgfile, char *weightfile, char *filename, int top);
 extern void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filename, float thresh, float hier_thresh, char *outfile, int fullscreen);
 extern void run_yolo(int argc, char **argv);
@@ -498,6 +502,11 @@ int main(int argc, char **argv)
     } else {
         fprintf(stderr, "Not an option: %s\n", argv[1]);
     }
+
+#ifdef FPGA
+    // Deinitialize OpenCL (FPGA) if it was initialized
+    gemm_fpga_deinit();
+#endif
     return 0;
 }
 
